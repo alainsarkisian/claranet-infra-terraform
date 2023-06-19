@@ -6,6 +6,7 @@ resource "random_password" "database_password" {
 
 resource "aws_ssm_parameter" "database_host" {
   name  = "/${var.ssm_prefix}/database/host"
+  type  = "String"
   value = var.database_host
 
   lifecycle {
@@ -15,6 +16,7 @@ resource "aws_ssm_parameter" "database_host" {
 
 resource "aws_ssm_parameter" "database_username" {
   name  = "/${var.ssm_prefix}/database/username"
+  type  = "String"
   value = var.database_username
 
   lifecycle {
@@ -34,6 +36,7 @@ resource "aws_ssm_parameter" "database_password" {
 
 resource "aws_ssm_parameter" "database_port" {
   name  = "/${var.ssm_prefix}/database/port"
+  type  = "String"
   value = var.database_port
 
   lifecycle {
@@ -42,19 +45,10 @@ resource "aws_ssm_parameter" "database_port" {
 }
 
 resource "aws_ssm_parameter" "database_name" {
-  name  = "/${var.ssm_prefix}/database/name"
+  name = "/${var.ssm_prefix}/database/name"
+  type = "String"
+
   value = var.database_name
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-}
-
-
-resource "aws_ssm_parameter" "database_port" {
-  name  = "/${var.ssm_prefix}/database/port"
-  type  = "String"
-  value = var.database_port
 
   lifecycle {
     ignore_changes = [value]
@@ -101,10 +95,20 @@ resource "aws_ssm_parameter" "ansible_git_branch" {
   }
 }
 
-resource "aws_ssm_parameter" "ansible_git_playbook" {
-  name  = "/${var.ssm_prefix}/ansible/git/playbook"
+resource "aws_ssm_parameter" "ansible_git_playbook_database" {
+  name  = "/${var.ssm_prefix}/ansible/git/playbook/database"
   type  = "String"
-  value = "playbooks/claranet-ansible-playbook/"
+  value = "playbooks/claranet-ansible-playbook-database/"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "ansible_git_playbook_application" {
+  name  = "/${var.ssm_prefix}/ansible/git/playbook/application"
+  type  = "String"
+  value = "playbooks/claranet-ansible-playbook-application/"
 
   lifecycle {
     ignore_changes = [value]

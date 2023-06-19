@@ -3,8 +3,10 @@ provider "aws" {
   region  = var.aws_region
 
   default_tags {
-    Application = var.application_name
-    Region      = var.aws_region
-    Iac         = "true"
+    tags = {
+      Application = var.application_name
+      Region      = var.aws_region
+      Iac         = "true"
+    }
   }
 }
