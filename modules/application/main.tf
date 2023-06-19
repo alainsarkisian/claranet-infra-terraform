@@ -1,27 +1,31 @@
-resource "tls_private_key" "pk" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
+# resource "tls_private_key" "pk" {
+#   algorithm = "RSA"
+#   rsa_bits  = 4096
+# }
 
-resource "aws_key_pair" "application_key_pair" {
-  key_name   = var.application_key_name
-  public_key = file("templates/key-pairs/claranet-app.pub")
-}
+# resource "aws_key_pair" "application_key_pair" {
+#   key_name   = var.application_key_name
+#   public_key = file("templates/key-pairs/claranet-app.pub")
+# }
 
-resource "local_file" "ssh_key" {
-  filename = "${aws_key_pair.application_key_pair.key_name}.pem"
-  content = tls_private_key.pk.private_key_pem
-}
+# resource "local_file" "ssh_key" {
+#   filename = "${aws_key_pair.application_key_pair.key_name}.pem"
+#   content = tls_private_key.pk.private_key_pem
+# }
 
 resource "aws_launch_template" "application_lt" {
   name          = "application-lt"
   image_id      = var.ami_id
   instance_type = var.instance_type
   user_data     = base64encode(var.application_user_data)
-  key_name      = aws_key_pair.application_key_pair.key_name
+  key_name      = "cloud-phoenix-kata-application"
   network_interfaces {
     security_groups = [ aws_security_group.app_sg.id ]
     associate_public_ip_address = true
+  }
+
+  iam_instance_profile {
+    arn = aws_iam_instance_profile.app_instance_profile.arn
   }
 }
 
@@ -46,7 +50,7 @@ resource "aws_autoscaling_group" "app_autoscaling_group" {
   }
   tag {
     key                 = "Name"
-    value               = "cloud-phoenix-kata"
+    value               = "cloud-phoenix-kata-application"
     propagate_at_launch = true
   }
 }
@@ -88,3 +92,4 @@ resource "aws_security_group" "app_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+

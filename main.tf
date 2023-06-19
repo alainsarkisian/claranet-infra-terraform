@@ -32,7 +32,7 @@ module "database" {
   database_key_name     = var.database_key_name
   database_subnet_id    = var.database_subnet_id
   vpc_id                = var.vpc_id
-  database_user_data    = templatefile("templates/database/user_data.tpl", { ssm_prefix = var.ssm_prefix })
+  database_user_data    = templatefile("./templates/database/user_data.tpl", { ssm_prefix = var.ssm_prefix })
   app_security_group_id = module.application.app_security_group_id
 }
 
@@ -47,7 +47,7 @@ module "application" {
   application_subnet_id    = var.application_subnet_id
   application_key_name     = var.application_key_name
   http_target_group_arn    = module.alb.http_target_group_arn
-  application_user_data    = templatefile("templates/application/user_data.tpl", { ssm_prefix = var.ssm_prefix })
+  application_user_data    = templatefile("./templates/application/user_data.tpl", { ssm_prefix = var.ssm_prefix })
   app_asg_min_size         = var.app_asg_min_size
   app_asg_max_size         = var.app_asg_max_size
   app_asg_desired_capacity = var.app_asg_desired_capacity
