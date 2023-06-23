@@ -10,7 +10,7 @@ resource "aws_key_pair" "database_key_pair" {
 
 resource "local_file" "ssh_key" {
   filename = "${aws_key_pair.database_key_pair.key_name}.pem"
-  content = tls_private_key.pk.private_key_pem
+  content  = tls_private_key.pk.private_key_pem
 }
 
 
