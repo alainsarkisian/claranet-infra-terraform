@@ -17,7 +17,8 @@ The terraform code is composed of :
 - **CLoud Watch Alarms** 
 
 ## Prerequisites
-    Everything is variabilized as much as possible. You will find some variables with "to_define" value, you will need to adapt them according to your cloud environment (VPC, subnets, ami, etc...).
+- Everything is variabilized as much as possible. You will find some variables with "to_define" value, you will need to adapt them according to your cloud environment (VPC, subnets, ami, etc...).
+>>>>>>> main
 
 
 ## How to deploy the infrastructure
