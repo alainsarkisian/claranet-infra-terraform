@@ -62,3 +62,8 @@ variable "database_host" {
   type        = string
   description = "Define the host the of database"
 }
+
+variable "application_name" {
+  type        = string
+  description = "Name of the application to deploy"
+}

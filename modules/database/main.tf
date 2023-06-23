@@ -19,7 +19,7 @@ resource "aws_launch_template" "database_lt" {
   image_id      = var.db_ami_id
   instance_type = var.instance_type
   user_data     = base64encode(var.database_user_data)
-  key_name      = "cloud-phoenix-kata-database"
+  key_name      = "${var.application_name}-database"
 
   network_interfaces {
     security_groups             = [aws_security_group.db_sg.id]
@@ -44,7 +44,7 @@ resource "aws_instance" "database" {
   iam_instance_profile = aws_iam_instance_profile.database_instance_profile.id
 
   tags = {
-    Name = "MongoDB"
+    Name = "${var.application_name}-database"
   }
 }
 

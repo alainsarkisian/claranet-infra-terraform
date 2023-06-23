@@ -39,6 +39,7 @@ module "database" {
   db_asg_desired_capacity = var.db_asg_desired_capacity
   db_subnet_cidr_block    = var.db_subnet_cidr_block
   database_host           = var.database_host
+  application_name        = var.application_name
 }
 
 module "application" {

@@ -30,7 +30,7 @@ resource "aws_launch_template" "application_lt" {
 }
 
 resource "aws_autoscaling_group" "app_autoscaling_group" {
-  name                  = "cloud-phoenix-kata-app-autoscaling-group"
+  name                  = "${var.application_name}-app-autoscaling-group"
   min_size              = var.app_asg_min_size
   max_size              = var.app_asg_max_size
   desired_capacity      = var.app_asg_desired_capacity
@@ -50,7 +50,7 @@ resource "aws_autoscaling_group" "app_autoscaling_group" {
   }
   tag {
     key                 = "Name"
-    value               = "cloud-phoenix-kata-application"
+    value               = "${var.application_name}-application"
     propagate_at_launch = true
   }
 }
