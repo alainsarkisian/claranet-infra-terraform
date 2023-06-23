@@ -40,3 +40,9 @@ variable "alb_hc_interval" {
   description = "Health check interval"
   default     = 30
 }
+
+variable "application_port" {
+  type        = string
+  description = "Define the port of the application"
+  default     = "3000"
+}

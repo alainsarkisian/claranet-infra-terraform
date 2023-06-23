@@ -8,6 +8,7 @@ module "ssm_parameters" {
   database_username       = var.database_username
   database_host           = var.database_host
   database_port           = var.database_port
+  application_port        = var.application_port
 }
 
 module "alb" {
@@ -22,12 +23,11 @@ module "alb" {
   application_name        = var.application_name
 }
 
-
 module "database" {
   source = "./modules/database"
 
   ssm_prefix              = var.ssm_prefix
-  ami_id                  = var.ami_id
+  db_ami_id               = var.db_ami_id
   instance_type           = var.instance_type
   database_key_name       = var.database_key_name
   database_subnet_id      = var.database_subnet_id
@@ -37,8 +37,9 @@ module "database" {
   db_asg_min_size         = var.db_asg_min_size
   db_asg_max_size         = var.db_asg_max_size
   db_asg_desired_capacity = var.db_asg_desired_capacity
+  db_subnet_cidr_block    = var.db_subnet_cidr_block
+  database_host           = var.database_host
 }
-
 
 module "application" {
   source = "./modules/application"
@@ -47,11 +48,16 @@ module "application" {
   ami_id                   = var.ami_id
   instance_type            = var.instance_type
   vpc_id                   = var.vpc_id
-  application_subnet_id    = var.application_subnet_id
   application_key_name     = var.application_key_name
   http_target_group_arn    = module.alb.http_target_group_arn
   application_user_data    = templatefile("./templates/application/user_data.tpl", { ssm_prefix = var.ssm_prefix })
   app_asg_min_size         = var.app_asg_min_size
   app_asg_max_size         = var.app_asg_max_size
   app_asg_desired_capacity = var.app_asg_desired_capacity
+  alb_arn                  = module.alb.alb_arn
+  app_subnet_cidr_block    = var.app_subnet_cidr_block
+  application_subnet_ids   = var.application_subnet_ids
+  email                    = var.email
+  application_name         = var.application_name
+  scaling_threshold        = var.scaling_threshold
 }

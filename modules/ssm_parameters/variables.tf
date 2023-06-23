@@ -43,3 +43,9 @@ variable "database_name" {
   description = "Define the name the of database"
   default     = "claranet"
 }
+
+variable "application_port" {
+  type        = string
+  description = "Define the port of the application"
+  default     = "3000"
+}

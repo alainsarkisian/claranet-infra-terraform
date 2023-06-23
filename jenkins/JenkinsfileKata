@@ -1,0 +1,83 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Preparation') {
+            steps {
+                sh '''
+                    #!/bin/bash
+                    curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+                    apt-get install -y nodejs
+                '''
+            }
+        }
+        stage('Source') {
+            steps {
+                git branch: 'main', url: 'https://github.com/claranet-ch/cloud-phoenix-kata.git'
+            }
+        }
+        stage('Install') {
+            steps {
+                sh '''            
+                    #!/bin/bash
+                    cd ./cloud-phoenix-kata
+                    npm install
+                '''
+            }
+        }
+
+        stage('Test') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    getAwsCredentials()
+                    initEnvironmentVariables()
+                    sh '''            
+                        #!/bin/bash
+                        cd ./cloud-phoenix-kata
+                        npm test
+                    '''                
+                }
+
+            }
+        }
+
+        stage('Start') {
+            steps {
+                getAwsCredentials()
+                initEnvironmentVariables()
+                sh '''
+                    #!/bin/bash
+                    cd ./cloud-phoenix-kata
+                    npm start
+                '''
+            }
+        }                
+
+    }
+}
+
+def getAwsCredentials() {
+  withCredentials([[$class: "AmazonWebServicesCredentialsBinding",
+                    credentialsId: 'aws_jenkins_credentials_id',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+    sh "rm -rf ~/.aws"
+    sh "mkdir -p ~/.aws"
+    sh "echo '[default]\naws_access_key_id=${AWS_ACCESS_KEY_ID}\naws_secret_access_key=${AWS_SECRET_ACCESS_KEY}' > ~/.aws/credentials"
+  }
+}
+
+def initEnvironmentVariables(){
+    sh '''
+        #!/bin/bash
+
+            export PORT=$(aws ssm get-parameter --name '/claranet/application/port' --query 'Parameter.Value' --output text)
+            export DB_HOST=$(aws ssm get-parameter --name '/claranet/database/host' --query 'Parameter.Value' --output text)
+            export DB_USER_NAME=$(aws ssm get-parameter --name '/claranet/database/username' --query 'Parameter.Value' --output text)
+            export DB_PASSWORD=$(aws ssm get-parameter --name '/claranet/database/password' --with-decryption --query 'Parameter.Value' --output text)
+            export DB_PORT=$(aws ssm get-parameter --name '/claranet/database/port' --query 'Parameter.Value' --output text)
+            export DB_NAME=$(aws ssm get-parameter --name '/claranet/database/name' --query 'Parameter.Value' --output text)
+
+            export DB_CONNECTION_STRING=mongodb://$DB_USER_NAME:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME
+    '''    
+}

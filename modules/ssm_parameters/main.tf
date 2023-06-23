@@ -114,3 +114,13 @@ resource "aws_ssm_parameter" "ansible_git_playbook_application" {
     ignore_changes = [value]
   }
 }
+
+resource "aws_ssm_parameter" "application_port" {
+  name  = "/${var.ssm_prefix}/application/port"
+  type  = "String"
+  value = var.application_port
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}

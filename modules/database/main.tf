@@ -16,7 +16,7 @@
 
 resource "aws_launch_template" "database_lt" {
   name          = "database-lt"
-  image_id      = var.ami_id
+  image_id      = var.db_ami_id
   instance_type = var.instance_type
   user_data     = base64encode(var.database_user_data)
   key_name      = "cloud-phoenix-kata-database"
@@ -31,21 +31,22 @@ resource "aws_launch_template" "database_lt" {
   }
 }
 
-# resource "aws_instance" "database" {
+resource "aws_instance" "database" {
 
-#   vpc_security_group_ids = ["${aws_security_group.db_sg.id}"]
-#   subnet_id              = var.database_subnet_id
+  vpc_security_group_ids = ["${aws_security_group.db_sg.id}"]
+  subnet_id              = var.database_subnet_id
+  private_ip             = var.database_host
 
-#   launch_template {
-#     id      = aws_launch_template.database_lt.id
-#     version = aws_launch_template.database_lt.latest_version
-#   }
-#   iam_instance_profile = aws_iam_instance_profile.database_instance_profile.id
+  launch_template {
+    id      = aws_launch_template.database_lt.id
+    version = aws_launch_template.database_lt.latest_version
+  }
+  iam_instance_profile = aws_iam_instance_profile.database_instance_profile.id
 
-#   tags = {
-#     Name = "MongoDB"
-#   }
-# }
+  tags = {
+    Name = "MongoDB"
+  }
+}
 
 resource "aws_security_group" "db_sg" {
   name        = "database-sg"
@@ -85,26 +86,26 @@ resource "aws_security_group" "db_sg" {
   }
 }
 
-resource "aws_autoscaling_group" "db_autoscaling_group" {
-  name                  = "cloud-phoenix-kata-database-autoscaling-group"
-  min_size              = var.db_asg_min_size
-  max_size              = var.db_asg_max_size
-  desired_capacity      = var.db_asg_desired_capacity
-  protect_from_scale_in = false
+# resource "aws_autoscaling_group" "db_autoscaling_group" {
+#   name                  = "cloud-phoenix-kata-database-autoscaling-group"
+#   min_size              = var.db_asg_min_size
+#   max_size              = var.db_asg_max_size
+#   desired_capacity      = var.db_asg_desired_capacity
+#   protect_from_scale_in = false
 
-  health_check_grace_period = 1100
-  health_check_type         = "EC2"
+#   health_check_grace_period = 1100
+#   health_check_type         = "EC2"
 
-  termination_policies = ["OldestLaunchTemplate"]
-  vpc_zone_identifier  = ["subnet-0ba5aa70b6680b21a", "subnet-0a3e94f1139ff6efe", "subnet-0e4c98ab196e0b120"]
+#   termination_policies = ["OldestLaunchTemplate"]
+#   vpc_zone_identifier  = ["subnet-0ba5aa70b6680b21a", "subnet-0a3e94f1139ff6efe", "subnet-0e4c98ab196e0b120"]
 
-  launch_template {
-    id      = aws_launch_template.database_lt.id
-    version = aws_launch_template.database_lt.latest_version
-  }
-  tag {
-    key                 = "Name"
-    value               = "cloud-phoenix-kata-database"
-    propagate_at_launch = true
-  }
-}
+#   launch_template {
+#     id      = aws_launch_template.database_lt.id
+#     version = aws_launch_template.database_lt.latest_version
+#   }
+#   tag {
+#     key                 = "Name"
+#     value               = "cloud-phoenix-kata-database"
+#     propagate_at_launch = true
+#   }
+# }

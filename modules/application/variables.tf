@@ -5,8 +5,7 @@ variable "ssm_prefix" {
 
 variable "ami_id" {
   type        = string
-  description = "AMI of the instance"
-  default     = "ami-04f86108c32876f88"
+  description = "AMI of the App instance"
 }
 
 variable "instance_type" {
@@ -20,9 +19,9 @@ variable "application_key_name" {
   description = "Instance key pair name"
 }
 
-variable "application_subnet_id" {
+variable "application_name" {
   type        = string
-  description = "Subnet id where application is deployed"
+  description = "Name of the application to deploy"
 }
 
 variable "vpc_id" {
@@ -53,4 +52,30 @@ variable "app_asg_desired_capacity" {
 variable "http_target_group_arn" {
   type        = string
   description = "Target group ARN of the ALB"
+}
+
+variable "alb_arn" {
+  type        = string
+  description = "ALB ARN"
+}
+
+variable "app_subnet_cidr_block" {
+  type        = string
+  description = "Subnet CIDR for Application"
+}
+
+variable "application_subnet_ids" {
+  type        = list(string)
+  description = "Subnets ids for the autoscaling group"
+}
+
+variable "scaling_threshold" {
+  type        = string
+  description = "Number of req/min from which we need to scale out"
+  default     = "100"
+}
+
+variable "email" {
+  type        = string
+  description = "Email where to subscripbe topic on which notifications will be sent"
 }

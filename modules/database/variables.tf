@@ -3,10 +3,9 @@ variable "ssm_prefix" {
   description = "Prefix of each ssm parameter"
 }
 
-variable "ami_id" {
+variable "db_ami_id" {
   type        = string
-  description = "AMI of the instance"
-  default     = "ami-04f86108c32876f88"
+  description = "AMI of the DB instance"
 }
 
 variable "instance_type" {
@@ -52,4 +51,14 @@ variable "db_asg_max_size" {
 variable "db_asg_desired_capacity" {
   type        = string
   description = "Desired number of instance for ASG"
+}
+
+variable "db_subnet_cidr_block" {
+  type        = string
+  description = "Subnet CIDR for Database"
+}
+
+variable "database_host" {
+  type        = string
+  description = "Define the host the of database"
 }

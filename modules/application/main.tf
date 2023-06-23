@@ -42,7 +42,7 @@ resource "aws_autoscaling_group" "app_autoscaling_group" {
   health_check_type         = "EC2"
 
   termination_policies = ["OldestLaunchTemplate"]
-  vpc_zone_identifier  = ["subnet-0ba5aa70b6680b21a", "subnet-0a3e94f1139ff6efe", "subnet-0e4c98ab196e0b120"]
+  vpc_zone_identifier  = var.application_subnet_ids
 
   launch_template {
     id      = aws_launch_template.application_lt.id
@@ -93,3 +93,19 @@ resource "aws_security_group" "app_sg" {
   }
 }
 
+resource "aws_autoscaling_policy" "app_asg_policy" {
+  name                   = "cloud-phoenix-kata-app-autoscaling-group-policy"
+  policy_type            = "SimpleScaling"
+  autoscaling_group_name = aws_autoscaling_group.app_autoscaling_group.name
+
+  adjustment_type    = "ChangeInCapacity"
+  scaling_adjustment = 1
+
+  cooldown = 300
+}
+
+resource "aws_autoscaling_notification" "app_asg_notification" {
+  group_names   = [aws_autoscaling_group.app_autoscaling_group.name]
+  notifications = ["autoscaling:EC2_INSTANCE_LAUNCH", "autoscaling:EC2_INSTANCE_TERMINATE"]
+  topic_arn     = aws_sns_topic.cpu_peak_topic.arn
+}

@@ -57,8 +57,12 @@ variable "database_name" {
 
 variable "ami_id" {
   type        = string
-  description = "AMI of the instance"
-  default     = "ami-04f86108c32876f88"
+  description = "AMI of the App instance"
+}
+
+variable "db_ami_id" {
+  type        = string
+  description = "AMI of the DB instance"
 }
 
 variable "instance_type" {
@@ -85,11 +89,6 @@ variable "vpc_id" {
 variable "application_key_name" {
   type        = string
   description = "Application instance key pair name"
-}
-
-variable "application_subnet_id" {
-  type        = string
-  description = "Subnet id where application is deployed"
 }
 
 variable "private_zone_id" {
@@ -154,4 +153,33 @@ variable "db_asg_desired_capacity" {
   type        = string
   description = "Desired number of instance for ASG"
 }
-# 0 1 * * 0 /path/to/backup_script.sh
+
+variable "application_port" {
+  type        = string
+  description = "Define the port of the application"
+  default     = "3000"
+}
+
+variable "app_subnet_cidr_block" {
+  type        = string
+  description = "Subnet CIDR for Application"
+}
+
+variable "db_subnet_cidr_block" {
+  type        = string
+  description = "Subnet CIDR for Database"
+}
+
+variable "application_subnet_ids" {
+  type = list(string)
+}
+
+variable "email" {
+  type        = string
+  description = "Email where to subscripbe topic on which notifications will be sent"
+}
+
+variable "scaling_threshold" {
+  type        = string
+  description = "Number of req/min from which we need to scale out"
+}

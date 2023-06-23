@@ -14,7 +14,7 @@ runcmd:
   - yum install -y git ansible jq unzip nano
 
   - [ sh, -c, "echo 'Installing pip'" ]
-  - sudo yum install python3-pip -y
+  - sudo yum install python-pip -y
 
   - [ sh, -c, "echo 'Installing AWS CLI V2'" ]
   - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -42,6 +42,7 @@ runcmd:
   - [ sh, -c, "echo 'Run ansible'" ]
   - INSTANCEID="$(curl 169.254.169.254/latest/meta-data/instance-id | tr - _ )"
   - ansible-galaxy collection install community.general
+  - ansible-galaxy collection install --force amazon.aws
 
   - touch /root/vars.yaml
   - [ sh, -c, "echo \"ssm_prefix: ${ssm_prefix}\" >> /root/vars.yaml" ]
