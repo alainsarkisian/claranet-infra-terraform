@@ -69,7 +69,7 @@ resource "aws_security_group" "db_sg" {
       from_port                = 27017
       to_port                  = 27017
       protocol                 = "tcp"
-      cidr_blocks              = ["172.31.0.0/16"]
+      cidr_blocks              = [var.db_subnet_cidr_block]
       source_security_group_id = var.app_security_group_id
       ipv6_cidr_blocks         = []
       prefix_list_ids          = []
