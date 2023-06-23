@@ -1,0 +1,68 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Preparation') {
+            steps {
+                sh '''
+                    #!/bin/bash
+                    sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
+                    wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+                    gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg --fingerprint
+                    echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+                    sudo tee /etc/apt/sources.list.d/hashicorp.list
+                    sudo apt update
+                    sudo apt-get install terraform
+                    echo "verifying terraform installation"
+                    terraform -help plan
+                '''
+            }
+        }
+        stage('Source') {
+            steps {
+                git branch: 'main', url: 'https://github.com/alainsarkisian/claranet-infra-terraform.git'
+            }
+        }
+        stage('Init') {
+            steps {
+                getAwsCredentials()
+                sh '''            
+                    #!/bin/bash
+                    terraform init
+                '''
+            }
+        }
+
+        stage('Plan') {
+            steps {
+                getAwsCredentials()
+                 sh '''            
+                    #!/bin/bash
+                    terraform plan -var-file=config/vars.tfvars -out plan
+                '''                
+            }
+        }
+
+        stage('Apply') {
+            steps {
+                getAwsCredentials()
+                 sh '''            
+                    #!/bin/bash
+                    terraform apply plan
+                '''   
+            }
+        }                
+
+    }
+}
+
+def getAwsCredentials() {
+  withCredentials([[$class: "AmazonWebServicesCredentialsBinding",
+                    credentialsId: 'aws_jenkins_credentials_id',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+    sh "rm -rf ~/.aws"
+    sh "mkdir -p ~/.aws"
+    sh "echo '[default]\naws_access_key_id=${AWS_ACCESS_KEY_ID}\naws_secret_access_key=${AWS_SECRET_ACCESS_KEY}' > ~/.aws/credentials"
+  }
+}

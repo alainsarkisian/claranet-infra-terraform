@@ -1,0 +1,7 @@
+.vscode
+.idea
+.terraform
+.terraform.lock.hcl
+plan
+claranet
+claranet-app
