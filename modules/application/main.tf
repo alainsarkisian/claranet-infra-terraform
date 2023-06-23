@@ -20,7 +20,7 @@ resource "aws_launch_template" "application_lt" {
   user_data     = base64encode(var.application_user_data)
   key_name      = "cloud-phoenix-kata-application"
   network_interfaces {
-    security_groups = [ aws_security_group.app_sg.id ]
+    security_groups             = [aws_security_group.app_sg.id]
     associate_public_ip_address = true
   }
 
@@ -44,7 +44,7 @@ resource "aws_autoscaling_group" "app_autoscaling_group" {
   termination_policies = ["OldestLaunchTemplate"]
   vpc_zone_identifier  = ["subnet-0ba5aa70b6680b21a", "subnet-0a3e94f1139ff6efe", "subnet-0e4c98ab196e0b120"]
 
-    launch_template {
+  launch_template {
     id      = aws_launch_template.application_lt.id
     version = aws_launch_template.application_lt.latest_version
   }

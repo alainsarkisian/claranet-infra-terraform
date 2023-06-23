@@ -14,9 +14,7 @@ runcmd:
   - yum install -y git ansible jq unzip nano
 
   - [ sh, -c, "echo 'Installing pip'" ]
-  - curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
-  - python get-pip.py
-  - rm -f get-pip.py
+  - sudo yum install python3-pip -y
 
   - [ sh, -c, "echo 'Installing AWS CLI V2'" ]
   - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"

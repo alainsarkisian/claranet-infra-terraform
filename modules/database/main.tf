@@ -13,29 +13,39 @@
 #   content = tls_private_key.pk.private_key_pem
 # }
 
+
 resource "aws_launch_template" "database_lt" {
   name          = "database-lt"
   image_id      = var.ami_id
   instance_type = var.instance_type
   user_data     = base64encode(var.database_user_data)
   key_name      = "cloud-phoenix-kata-database"
-}
 
-resource "aws_instance" "database" {
-
-  vpc_security_group_ids = ["${aws_security_group.db_sg.id}"]
-  subnet_id              = var.database_subnet_id
-
-  launch_template {
-    id      = aws_launch_template.database_lt.id
-    version = aws_launch_template.database_lt.latest_version
+  network_interfaces {
+    security_groups             = [aws_security_group.db_sg.id]
+    associate_public_ip_address = true
   }
-  iam_instance_profile = aws_iam_instance_profile.database_instance_profile.id
 
-  tags = {
-    Name = "MongoDB"
+  iam_instance_profile {
+    arn = aws_iam_instance_profile.database_instance_profile.arn
   }
 }
+
+# resource "aws_instance" "database" {
+
+#   vpc_security_group_ids = ["${aws_security_group.db_sg.id}"]
+#   subnet_id              = var.database_subnet_id
+
+#   launch_template {
+#     id      = aws_launch_template.database_lt.id
+#     version = aws_launch_template.database_lt.latest_version
+#   }
+#   iam_instance_profile = aws_iam_instance_profile.database_instance_profile.id
+
+#   tags = {
+#     Name = "MongoDB"
+#   }
+# }
 
 resource "aws_security_group" "db_sg" {
   name        = "database-sg"
@@ -72,5 +82,29 @@ resource "aws_security_group" "db_sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_autoscaling_group" "db_autoscaling_group" {
+  name                  = "cloud-phoenix-kata-database-autoscaling-group"
+  min_size              = var.db_asg_min_size
+  max_size              = var.db_asg_max_size
+  desired_capacity      = var.db_asg_desired_capacity
+  protect_from_scale_in = false
+
+  health_check_grace_period = 1100
+  health_check_type         = "EC2"
+
+  termination_policies = ["OldestLaunchTemplate"]
+  vpc_zone_identifier  = ["subnet-0ba5aa70b6680b21a", "subnet-0a3e94f1139ff6efe", "subnet-0e4c98ab196e0b120"]
+
+  launch_template {
+    id      = aws_launch_template.database_lt.id
+    version = aws_launch_template.database_lt.latest_version
+  }
+  tag {
+    key                 = "Name"
+    value               = "cloud-phoenix-kata-database"
+    propagate_at_launch = true
   }
 }

@@ -140,4 +140,18 @@ variable "app_asg_desired_capacity" {
   description = "Desired number of instance for ASG"
 }
 
+variable "db_asg_min_size" {
+  type        = string
+  description = "Minimum number of instance for ASG"
+}
+
+variable "db_asg_max_size" {
+  type        = string
+  description = "Maximum number of instance for ASG"
+}
+
+variable "db_asg_desired_capacity" {
+  type        = string
+  description = "Desired number of instance for ASG"
+}
 # 0 1 * * 0 /path/to/backup_script.sh

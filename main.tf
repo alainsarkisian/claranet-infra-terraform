@@ -26,14 +26,17 @@ module "alb" {
 module "database" {
   source = "./modules/database"
 
-  ssm_prefix            = var.ssm_prefix
-  ami_id                = var.ami_id
-  instance_type         = var.instance_type
-  database_key_name     = var.database_key_name
-  database_subnet_id    = var.database_subnet_id
-  vpc_id                = var.vpc_id
-  database_user_data    = templatefile("./templates/database/user_data.tpl", { ssm_prefix = var.ssm_prefix })
-  app_security_group_id = module.application.app_security_group_id
+  ssm_prefix              = var.ssm_prefix
+  ami_id                  = var.ami_id
+  instance_type           = var.instance_type
+  database_key_name       = var.database_key_name
+  database_subnet_id      = var.database_subnet_id
+  vpc_id                  = var.vpc_id
+  database_user_data      = templatefile("./templates/database/user_data.tpl", { ssm_prefix = var.ssm_prefix })
+  app_security_group_id   = module.application.app_security_group_id
+  db_asg_min_size         = var.db_asg_min_size
+  db_asg_max_size         = var.db_asg_max_size
+  db_asg_desired_capacity = var.db_asg_desired_capacity
 }
 
 

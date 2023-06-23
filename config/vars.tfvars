@@ -11,7 +11,7 @@ database_host     = "to_define"
 database_port     = "27017"
 database_name     = "claranet"
 
-ami_id             = "ami-020e14de09d1866b4"
+ami_id             = "ami-028f9616b17ba1d53"
 instance_type      = "t3.micro"
 database_key_name  = "claranet-keypair-database"
 database_subnet_id = "subnet-0ba5aa70b6680b21a"
@@ -35,3 +35,9 @@ app_asg_min_size = 1
 app_asg_max_size = 10
 
 app_asg_desired_capacity = 1
+
+db_asg_min_size = 1
+
+db_asg_max_size = 1
+
+db_asg_desired_capacity = 1
