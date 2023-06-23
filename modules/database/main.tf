@@ -1,17 +1,17 @@
-# resource "tls_private_key" "pk" {
-#   algorithm = "RSA"
-#   rsa_bits  = 4096
-# }
+resource "tls_private_key" "pk" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
 
-# resource "aws_key_pair" "database_key_pair" {
-#   key_name   = var.database_key_name
-#   public_key = file("templates/key-pairs/claranet.pub")
-# }
+resource "aws_key_pair" "database_key_pair" {
+  key_name   = var.database_key_name
+  public_key = file("templates/key-pairs/claranet.pub")
+}
 
-# resource "local_file" "ssh_key" {
-#   filename = "${aws_key_pair.database_key_pair.key_name}.pem"
-#   content = tls_private_key.pk.private_key_pem
-# }
+resource "local_file" "ssh_key" {
+  filename = "${aws_key_pair.database_key_pair.key_name}.pem"
+  content = tls_private_key.pk.private_key_pem
+}
 
 
 resource "aws_launch_template" "database_lt" {
@@ -85,27 +85,3 @@ resource "aws_security_group" "db_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
-# resource "aws_autoscaling_group" "db_autoscaling_group" {
-#   name                  = "cloud-phoenix-kata-database-autoscaling-group"
-#   min_size              = var.db_asg_min_size
-#   max_size              = var.db_asg_max_size
-#   desired_capacity      = var.db_asg_desired_capacity
-#   protect_from_scale_in = false
-
-#   health_check_grace_period = 1100
-#   health_check_type         = "EC2"
-
-#   termination_policies = ["OldestLaunchTemplate"]
-#   vpc_zone_identifier  = ["subnet-0ba5aa70b6680b21a", "subnet-0a3e94f1139ff6efe", "subnet-0e4c98ab196e0b120"]
-
-#   launch_template {
-#     id      = aws_launch_template.database_lt.id
-#     version = aws_launch_template.database_lt.latest_version
-#   }
-#   tag {
-#     key                 = "Name"
-#     value               = "cloud-phoenix-kata-database"
-#     propagate_at_launch = true
-#   }
-# }

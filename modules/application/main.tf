@@ -1,17 +1,17 @@
-# resource "tls_private_key" "pk" {
-#   algorithm = "RSA"
-#   rsa_bits  = 4096
-# }
+resource "tls_private_key" "pk" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
 
-# resource "aws_key_pair" "application_key_pair" {
-#   key_name   = var.application_key_name
-#   public_key = file("templates/key-pairs/claranet-app.pub")
-# }
+resource "aws_key_pair" "application_key_pair" {
+  key_name   = var.application_key_name
+  public_key = file("templates/key-pairs/claranet-app.pub")
+}
 
-# resource "local_file" "ssh_key" {
-#   filename = "${aws_key_pair.application_key_pair.key_name}.pem"
-#   content = tls_private_key.pk.private_key_pem
-# }
+resource "local_file" "ssh_key" {
+  filename = "${aws_key_pair.application_key_pair.key_name}.pem"
+  content = tls_private_key.pk.private_key_pem
+}
 
 resource "aws_launch_template" "application_lt" {
   name          = "application-lt"
